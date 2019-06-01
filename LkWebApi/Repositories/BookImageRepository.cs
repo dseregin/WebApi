@@ -1,6 +1,4 @@
 ﻿using LkWebApi.Models;
-using System;
-using System.Linq;
 
 namespace LkWebApi.Repositories
 {
@@ -17,16 +15,5 @@ namespace LkWebApi.Repositories
         {
            _dbSet.BookImages.Add(bookImage);
         }
-
-        /// <summary>
-        /// Получение информации изображения по идентификатору книги
-        /// </summary>
-        /// <param name="bookId"></param>
-        /// <returns></returns>
-        public BookImage GetByBookId(Guid bookId)
-        {
-            return _dbSet.BookImages.FirstOrDefault(bi => bi.BookId == bookId);
-        }
-
     }
 }

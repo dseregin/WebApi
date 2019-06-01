@@ -10,6 +10,9 @@ using LkWebApi.Helpers;
 
 namespace LkWebApi.Controllers
 {
+    /// <summary>
+    /// Контроллер для работы с книгами
+    /// </summary>
     [Route("api/[controller]")]
     [ApiController]
     public class BookController : ControllerBase
@@ -118,6 +121,13 @@ namespace LkWebApi.Controllers
             return new JsonResult(_bookService.SortBookByFilter(sortFilter));
         }
 
+
+        /// <summary>
+        /// Изменение
+        /// </summary>
+        /// <param name="book"></param>
+        /// <param name="bookId"></param>
+        /// <returns></returns>
         [HttpPut("update/{bookId}")]
         public IActionResult UpdateBook(Book book, Guid bookId)
         {

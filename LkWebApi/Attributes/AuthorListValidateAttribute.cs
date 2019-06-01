@@ -5,6 +5,9 @@ using System.Linq;
 
 namespace LkWebApi.Attributes
 {
+    /// <summary>
+    /// Валидатор количества авторов у книги
+    /// </summary>
     public class AuthorListValidateAttribute : ValidationAttribute
     {
         public override bool IsValid(object value)

@@ -4,6 +4,9 @@ using ES = LkWebApi.ExpressionService;
 
 namespace LkWebApi.Controllers
 {
+    /// <summary>
+    /// Контроллер для обработки выражения
+    /// </summary>
     [Route("api/[controller]")]
     public class ExpressionController : ControllerBase
     {

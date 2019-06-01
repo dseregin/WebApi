@@ -3,6 +3,9 @@ using System.Text.RegularExpressions;
 
 namespace LkWebApi.Attributes
 {
+    /// <summary>
+    /// Валидатор корректности ISBN
+    /// </summary>
     public class IsbnValidateAttribute : ValidationAttribute
     {
         private const string _pattern = @"^(978\-)?(\d+\-\d+\-\d+\-\d{1})$";

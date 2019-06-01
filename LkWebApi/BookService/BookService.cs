@@ -2,6 +2,9 @@
 
 namespace LkWebApi.BookService
 {
+    /// <summary>
+    /// Класс для бизнеслогики
+    /// </summary>
     public partial class BookService
     {
         private BookRepository _bookRepository;

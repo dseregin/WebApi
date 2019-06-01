@@ -3,6 +3,9 @@ using System.ComponentModel.DataAnnotations;
 
 namespace LkWebApi.Attributes
 {
+    /// <summary>
+    /// Валидатор года публикации
+    /// </summary>
     public class PublishYearValidateAttribute : ValidationAttribute
     {
         public override bool IsValid(object value)
