@@ -1,13 +1,12 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Threading.Tasks;
 using LkWebApi.Models;
-using LkWebApi.Repositories;
+using BS = LkWebApi.BookService;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using LkWebApi.Helpers;
 
 namespace LkWebApi.Controllers
 {
@@ -15,40 +14,49 @@ namespace LkWebApi.Controllers
     [ApiController]
     public class BookController : ControllerBase
     {
-        IHostingEnvironment _appEnvironment;
-        BookRepository _bookRepository;
-        BookImageRepository _bookImageRepository;
+        BS.BookService _bookService;
 
-        public BookController(IHostingEnvironment appEnvironment, BookRepository bookRepository, BookImageRepository bookImageRepository)
+        IHostingEnvironment _appEnvironment;
+
+        public BookController(IHostingEnvironment appEnvironment, BS.BookService bookService)
         {
             _appEnvironment = appEnvironment;
-            _bookRepository = bookRepository;
-            _bookImageRepository = bookImageRepository;
+
+            _bookService = bookService;
         }
 
-        [Route("add")]
-        [HttpPost]
+        /// <summary>
+        /// Добавление книги со списком авторов
+        /// </summary>
+        /// <param name="book"></param>
+        /// <returns></returns>
+        [HttpPost("add")]
         public IActionResult AddBook(Book book)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            if (book.Id == Guid.Empty)
-                book.Id = Guid.NewGuid();
+            _bookService.AddBook(book);
 
-            DbSet.Books.Add(book);
-
-            return Ok();
+            return new JsonResult(book);
         }
 
-        [Route("upload")]
-        [HttpPost]
+        /// <summary>
+        /// Загрузка изображения обложки либо в файловую систему сервера
+        /// либо в бд, взависимости от параметра bdMode
+        /// </summary>
+        /// <param name="uploadedFile"></param>
+        /// <param name="bookId"></param>
+        /// <param name="bdMode"></param>
+        /// <returns></returns>
+        [HttpPost("upload")]
         public async Task<IActionResult> UploadAsync(IFormFile uploadedFile, [FromQuery] Guid bookId, bool bdMode = false)
         {
-            try
+            if (_bookService.IsExistBook(bookId) && uploadedFile != null)
             {
-                if (_bookRepository.IsExists(bookId) && uploadedFile != null)
+                try
                 {
+
                     //Сохранение в файловую систему
                     if (!bdMode)
                     {
@@ -62,7 +70,7 @@ namespace LkWebApi.Controllers
                         using (var fileStream = new FileStream(path + uploadedFile.FileName, FileMode.Create))
                         {
                             await uploadedFile.CopyToAsync(fileStream);
-                            _bookImageRepository.AddImage(new BookImage { BookId = bookId, FileName = uploadedFile.FileName, Path = path });
+                            _bookService.AddImage(new BookImage { BookId = bookId, FileName = uploadedFile.FileName, Path = path });
                         }
                     }
                     //Сохранение в т.н. БД
@@ -71,16 +79,52 @@ namespace LkWebApi.Controllers
                         using (var binaryReader = new BinaryReader(uploadedFile.OpenReadStream()))
                         {
                             var imageData = binaryReader.ReadBytes((int)uploadedFile.Length);
-                            _bookImageRepository.AddImage(new BookImage { BookId = bookId, Data = imageData });
+                            _bookService.AddImage(new BookImage { BookId = bookId, Data = imageData });
                         }
                     }
                 }
+                catch (Exception ex)
+                {
+                    return StatusCode(StatusCodes.Status500InternalServerError, ex);
+                }
+                return Ok();
             }
-            catch (Exception ex)
+            else
             {
-                return BadRequest(ex);
+                return BadRequest();
             }
-            return Ok();
+        }
+
+        /// <summary>
+        /// Удаление книги по id
+        /// </summary>
+        /// <param name="bookId"></param>
+        /// <returns></returns>
+        [HttpDelete("deleteById/{bookId}")]
+        public IActionResult DeleteById(Guid bookId)
+        {
+            var result = _bookService.DeleteBookById(bookId);
+            return Ok(result);
+        }
+
+        /// <summary>
+        /// Полуение списка, отсортированного по загаловку или году
+        /// </summary>
+        /// <param name="sortFilter"></param>
+        /// <returns></returns>
+        [HttpGet("getBooks")]
+        public IActionResult GetBooks([FromQuery] SortFilter sortFilter)
+        {
+            return new JsonResult(_bookService.SortBookByFilter(sortFilter));
+        }
+
+        [HttpPut("update/{bookId}")]
+        public IActionResult UpdateBook(Book book, Guid bookId)
+        {
+            DeleteById(bookId);
+            AddBook(book);
+
+            return new JsonResult(book);
         }
     }
 }

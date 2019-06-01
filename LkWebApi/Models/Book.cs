@@ -1,5 +1,6 @@
 ﻿using LkWebApi.Attributes;
 using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
 namespace LkWebApi.Models
@@ -18,7 +19,11 @@ namespace LkWebApi.Models
         [StringLength(30, ErrorMessage ="Некорректная длина заголовка")]
         public string Head { get; set; }
 
-        //public IEnumerable<Author> Authors {get;set;}
+        /// <summary>
+        /// Список авторов
+        /// </summary>
+        [AuthorListValidate]
+        public IEnumerable<Author> Authors {get;set;}
 
         /// <summary>
         /// Количество страниц
@@ -30,7 +35,8 @@ namespace LkWebApi.Models
         /// <summary>
         /// Год публикации
         /// </summary>
-        public int PublishYear { get; set; } ////////////////сделать валидацию!!!
+        [PublishYearValidate(ErrorMessage ="Некорректный год публикацц")]
+        public int? PublishYear { get; set; }
 
 
         /// <summary>

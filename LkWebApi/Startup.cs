@@ -1,16 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using LkWebApi.Repositories;
+﻿using LkWebApi.Repositories;
+using BS = LkWebApi.BookService;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 using Swashbuckle.AspNetCore.Swagger;
 
 namespace LkWebApi
@@ -36,6 +30,9 @@ namespace LkWebApi
 
             services.AddSingleton<BookRepository>();
             services.AddSingleton<BookImageRepository>();
+            services.AddSingleton<AuthorRepository>();
+
+            services.AddSingleton<BS.BookService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

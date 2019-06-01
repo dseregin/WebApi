@@ -1,15 +1,13 @@
 ﻿using LkWebApi.Models;
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 
 namespace LkWebApi.Repositories
 {
     /// <summary>
     /// Репозиторий для работы с изображениями обложек
     /// </summary>
-    public class BookImageRepository
+    public class BookImageRepository : BaseRepository
     {
         /// <summary>
         /// Добавление информации о изображении
@@ -17,7 +15,7 @@ namespace LkWebApi.Repositories
         /// <param name="bookImage"></param>
         public void AddImage(BookImage bookImage)
         {
-            DbSet.BookImages.Add(bookImage);
+           _dbSet.BookImages.Add(bookImage);
         }
 
         /// <summary>
@@ -27,7 +25,8 @@ namespace LkWebApi.Repositories
         /// <returns></returns>
         public BookImage GetByBookId(Guid bookId)
         {
-            return DbSet.BookImages.FirstOrDefault(bi => bi.BookId == bookId);
+            return _dbSet.BookImages.FirstOrDefault(bi => bi.BookId == bookId);
         }
+
     }
 }
