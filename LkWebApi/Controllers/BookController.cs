@@ -131,10 +131,16 @@ namespace LkWebApi.Controllers
         [HttpPut("update/{bookId}")]
         public IActionResult UpdateBook(Book book, Guid bookId)
         {
-            DeleteById(bookId);
-            AddBook(book);
-
-            return new JsonResult(book);
+            if (_bookService.DeleteBookById(bookId))
+            {
+                _bookService.AddBook(book);
+                return new JsonResult(book);
+            }
+            else
+            {
+                return BadRequest("Не найдена книга для изменения");
+            }
+            
         }
     }
 }
